@@ -51,8 +51,8 @@ int main( int argc, char **argv ) {
   double init_cube_size_t = 1;
   double min_t = fit_time - (num_t/2);
 
-  double min_xyz = -5500;
-  double max_xyz = 5500;
+  double min_xyz = -4000;
+  double max_xyz = 4000;
   double init_cube_rad = 500;
   int    init_num_cubes = floor( ( max_xyz - min_xyz ) / init_cube_rad );
 

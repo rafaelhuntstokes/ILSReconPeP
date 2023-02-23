@@ -53,15 +53,15 @@ int main( int argc, char **argv ) {
   double init_cube_size_t = 1;
   double min_t = fit_time - (num_t/2);
 
-  double min_xyz = -5500;
-  double max_xyz = 5500;
+  double min_xyz = -4000;
+  double max_xyz = 4000;
   double init_cube_rad = 500;
   int    init_num_cubes = floor( ( max_xyz - min_xyz ) / init_cube_rad );
 
 
   //// Adaptive grid parameters
   double t_res = 0.5;
-  double res = 100;
+  double res = 1000;
   double factor = 10;
   int    num_mini_cubes = floor( ( max_xyz - min_xyz ) / 100 );
 
@@ -161,9 +161,9 @@ void AdapGrid( CubeCollection* col, CubeCollection* &final_cube_col, RAT::DU::PM
 
   double best_global_overlap = CalcOverlap( col, pmt_info, time_res_calc, calibrated_PMTs, init_cube_size_t, t_emit, t_res );
 
-  col->RemoveRepeatedPMTs();
+  // col->RemoveRepeatedPMTs();
 
-  best_global_overlap = CalcOverlap( col, pmt_info, time_res_calc, calibrated_PMTs, init_cube_size_t, t_emit, t_res );
+  // best_global_overlap = CalcOverlap( col, pmt_info, time_res_calc, calibrated_PMTs, init_cube_size_t, t_emit, t_res );
 
   //// Loop Cubes
   for( int i_cube = 0; i_cube < col->GetNCubes(); i_cube++ ){
@@ -178,7 +178,7 @@ void AdapGrid( CubeCollection* col, CubeCollection* &final_cube_col, RAT::DU::PM
     if( cub->GetRadius() > res ){
       
       //// If llh > 50% best
-      if( cub->GetLLH() > 0 ){ // 0.5*best_global_overlap ) {
+      if( cub->GetLLH() > 0.5*best_global_overlap ){ // 0) {
 	      CubeCollection* new_col = cub->Divide( factor );
 	      t_res = t_res / ( factor );
 	      //// Each new cube has same associated PMTs as the parent bigger cube
