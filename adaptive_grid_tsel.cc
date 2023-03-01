@@ -22,14 +22,18 @@ double CalcOverlap( CubeCollection* &col, RAT::DU::PMTInfo pmt_info, RAT::DU::Ti
 
 int main( int argc, char **argv ) {
 
-  if (argc != 3) {
-    std::cout << "Syntax is $: adaptive_grid inputfile outputfile" << std::endl;
+  if (argc != 6) {
+    std::cout << "Syntax is $: adaptive_grid inputfile outputfile minXYZ maxXYZ radius" << std::endl;
     exit(-1);
   }
 
   const std::string fname = argv[1];
   const std::string out_fname = argv[2];
-
+  double min_xyz = atof(argv[3]);
+  double max_xyz = atof(argv[4]);
+  double init_cube_rad = atof(argv[5]);
+  std::cout << "Creating cube with MinX " << min_xyz << " mm, MaxX " << max_xyz << " mm and radius " << init_cube_rad << " mm." << std::endl;
+  
   //// Open file
   RAT::DU::DSReader ds_reader( fname.c_str() );
 
@@ -53,24 +57,24 @@ int main( int argc, char **argv ) {
   double init_cube_size_t = 1;
   double min_t = fit_time - (num_t/2);
 
-  double min_xyz = -4000;
-  double max_xyz = 4000;
-  double init_cube_rad = 500;
-  int    init_num_cubes = floor( ( max_xyz - min_xyz ) / init_cube_rad );
+  // double min_xyz = -4000;
+  // double max_xyz = 4000;
+  // double init_cube_rad = 500;
+  int    init_num_cubes = floor( ( max_xyz - min_xyz ) / (init_cube_rad*2) );
 
 
   //// Adaptive grid parameters
-  double t_res = 0.5;
+  double t_res = 0.5 * (init_cube_rad / 500);   // scale the timing gate dependent on how big the megacubes are
   double res = 1000;
   double factor = 10;
-  int    num_mini_cubes = floor( ( max_xyz - min_xyz ) / 100 );
+  // int    num_mini_cubes = floor( ( max_xyz - min_xyz ) / 100 );
 
   //// Gonna make some histograms
   TH3D* hists[100];
   for(int i=0; i<num_t; i++){
     TString hname = Form("h_%d",i);
     TString htitle = Form("h_%f",min_t + init_cube_size_t*i);
-    hists[i] = new TH3D( hname, hname, num_mini_cubes, min_xyz, max_xyz, num_mini_cubes, min_xyz, max_xyz, num_mini_cubes, min_xyz, max_xyz );
+    hists[i] = new TH3D( hname, hname, init_num_cubes, min_xyz, max_xyz, init_num_cubes, min_xyz, max_xyz, init_num_cubes, min_xyz, max_xyz );
     hists[i]->GetXaxis()->SetTitle("X, mm  ");
     hists[i]->GetXaxis()->SetTitleOffset(1.5);
     hists[i]->GetYaxis()->SetTitle("Y, mm");
