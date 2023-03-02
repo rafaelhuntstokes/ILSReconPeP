@@ -15,7 +15,7 @@ def check_dir(dname):
         print "Made directory %s...." % dname
     return dname
 
-def pycondor_submit(exe_name, base_name, job_name, img_dir, input_file, over_dir, minXYZ, maxXYZ, radius, sleep_time = 1, priority = 5):
+def pycondor_submit(exe_name, base_name, job_name, img_dir, input_file, over_dir, minXYZ, maxXYZ, radius, t_gate, sleep_time = 1, priority = 5):
     '''
     submit a job to condor, write a sh file to source environment and execute command
     then write a submit file to be run by condor_submit
@@ -31,7 +31,7 @@ def pycondor_submit(exe_name, base_name, job_name, img_dir, input_file, over_dir
                      "source " + str(img_dir) + "/env.sh" + "\n" + \
                      "source " + str(os.getenv('ENV_FILE')) + "\n" + \
                      "source " + str(os.getenv('RATROOT')) + "/env.sh" + "\n" + \
-                     str(exec_path) + " " + os.path.abspath(input_file) + " " + os.path.abspath(over_dir) + "/" + str(job_name) + ".root" + " " + str(minXYZ) + " "  + str(maxXYZ) + " " + str(radius) + " \n"                     
+                     str(exec_path) + " " + os.path.abspath(input_file) + " " + os.path.abspath(over_dir) + "/" + str(job_name) + ".root" + " " + str(minXYZ) + " "  + str(maxXYZ) + " " + str(radius) + " " + t_gate + "\n"                     
 
     sh_filepath = "{0}sh/".format(condor_path) + str(job_name).replace("/", "") + '.sh'
     if not os.path.exists(os.path.dirname(sh_filepath)):
@@ -86,6 +86,7 @@ if __name__ == "__main__":
     parser.add_argument('minXYZ', type=str, help='minimum cube edge')
     parser.add_argument('maxXYZ', type=str, help='Maximum cube edge')
     parser.add_argument('radius', type=str, help='radius of cube (ie side length / 2)')
+    parser.add_argument('t_gate', type=str, help="width of acceptable time residual about zero (0 +- t_gate / 2)")
     parser.add_argument("-n", "--no_jobs", type=int,
                         default=1,
                         help="how many identical jobs would you like to launch?")
@@ -102,6 +103,7 @@ if __name__ == "__main__":
     minXYZ = args.minXYZ
     maxXYZ = args.maxXYZ
     radius = args.radius
+    t_gate = args.t_gate
 
     log_dir = check_dir("{0}/log/".format(over_dir))
     error_dir = check_dir("{0}/error/".format(over_dir))
@@ -111,5 +113,5 @@ if __name__ == "__main__":
 
     job_id = "{0}_0".format(base_name)
 
-    pycondor_submit(exe_name, base_name, job_id, img_dir, input_file, over_dir, minXYZ, maxXYZ, radius, sleep_time = 1, priority = 5)
+    pycondor_submit(exe_name, base_name, job_id, img_dir, input_file, over_dir, minXYZ, maxXYZ, radius, t_gate, sleep_time = 1, priority = 5)
 
